@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Angular sortable table example</title>
+		<script src="../bower_components/jquery/dist/jquery.js"></script>
+		<script src="../bower_components/angular/angular.js"></script>
+		<script src="../angular-sortable-table.js"></script>
+		<script src="app.js"></script>
+	</head>
+	<body ng-app="angular-sortable-table-example" ng-controller="MainCtrl">
+		<h1>Angular sortable table example</h1>
+		<table sortable-table="personSort">
+			<thead>
+				<tr>
+					<th sortable-column="name">Name</th>
+					<th sortable-column="age">Age</th>
+					<th sortable-column="county:getCountyMapping">County</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="person in people | sortTable:personSort">
+					<td>{{person.name}}</td>
+					<td>{{person.age}}</td>
+					<td>{{countyMappings[person.county]}}</td>
+				</tr>
+			</tbody>
+		</table>
+		<!--
+		<table>
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Age</th>
+					<th>County</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="person in people | orderBy:getCountyMapping">
+					<td>{{person.name}}</td>
+					<td>{{person.age}}</td>
+					<td>{{countyMappings[person.county]}}</td>
+				</tr>
+			</tbody>
+		</table>
+		-->
+	</body>
+
+</html>

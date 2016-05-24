@@ -1,0 +1,25 @@
+{
+  "name": "angular-sortable-table",
+  "version": "0.0.0",
+  "authors": [
+    "Simon Hagström <simon.hagstrom@gmail.com>"
+  ],
+  "description": "Sort table rows",
+  "main": [
+    "angular-sortable-table-message.js"
+  ],
+  "keywords": [
+    "angular",
+    "table",
+    "sorting"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "bower_components",
+    "example"
+  ],
+  "dependencies": {
+    "angular": "~1.4.8"
+  }
+}

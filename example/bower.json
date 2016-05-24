@@ -1,0 +1,8 @@
+{
+  "name": "angular-validation-message-example",
+  "license": "MIT",
+  "dependencies": {
+    "jquery": "~1.11.0",
+    "angular-validation-message": "file:.."
+  }
+}
