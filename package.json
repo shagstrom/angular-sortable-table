@@ -1,0 +1,21 @@
+{
+  "name": "@shagstrom/angular-sortable-table",
+  "main": "angular-sortable-table.js",
+  "version": "0.1.0",
+  "homepage": "https://github.com/shagstrom/angular-sortable-table",
+  "repository" :{
+    "type" : "git",
+    "url" : "https://github.com/shagstrom/angular-sortable-table.git"
+  },
+  "author": "Simon Hagström <simon.hagstrom@gmail.com>",
+  "description": "Angular directives and filters for sorting table rows",
+  "keywords": [
+    "angular",
+    "table",
+    "sorting"
+  ],
+  "license": "MIT",
+  "dependencies":{
+    "angular": "^1.2.0"
+  }
+}

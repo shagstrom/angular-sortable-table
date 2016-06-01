@@ -1,12 +1,12 @@
 {
   "name": "angular-sortable-table",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "authors": [
     "Simon Hagström <simon.hagstrom@gmail.com>"
   ],
-  "description": "Sort table rows",
+  "description": "Angular directives and filters for sorting table rows",
   "main": [
-    "angular-sortable-table-message.js"
+    "angular-sortable-table.js"
   ],
   "keywords": [
     "angular",
@@ -20,6 +20,6 @@
     "example"
   ],
   "dependencies": {
-    "angular": "~1.4.8"
+    "jquery": "^1.11.0"
   }
 }

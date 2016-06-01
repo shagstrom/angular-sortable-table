@@ -3,47 +3,52 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Angular sortable table example</title>
-		<script src="../bower_components/jquery/dist/jquery.js"></script>
-		<script src="../bower_components/angular/angular.js"></script>
-		<script src="../angular-sortable-table.js"></script>
-		<script src="app.js"></script>
+		<link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
+		<script src="bower_components/angular/angular.js"></script>
+		<script src="bower_components/angular-sortable-table/angular-sortable-table.js"></script>
+		<style>
+			th.sortable { cursor: pointer; }
+			th.sortable:after { content: "\f0dc"; padding-left: 5px; font-family: FontAwesome; font-size: 12px; }
+			th.sortable.asc:after { content: "\f0de"; }
+			th.sortable.desc:after { content: "\f0dd"; }
+		</style>
+		<script>
+			angular.module('angular-sortable-table-example', [ 'shagstrom.angular-sortable-table' ])
+				.controller('MainCtrl', function ($scope) {
+					$scope.countryMappings = {
+						"GH": "Ghana",
+						"GQ": "Equatorial Guinea",
+						"GR": "Greece"
+					};
+					$scope.people = [
+						{ name: "John", age: 34, countryCode: "GQ" },
+						{ name: "Sahra", age: 36, countryCode: "GH" },
+						{ name: "Desmond", age: 19, countryCode: "GR" },
+						{ name: "Carole", age: 25, countryCode: "GH" },
+						{ name: "Annie", age: 25, countryCode: "GQ" }
+					];
+				});
+		</script>
 	</head>
 	<body ng-app="angular-sortable-table-example" ng-controller="MainCtrl">
 		<h1>Angular sortable table example</h1>
-		<table sortable-table="personSort">
+		<table sortable-table="personSortObject">
 			<thead>
 				<tr>
 					<th sortable-column="name">Name</th>
 					<th sortable-column="age">Age</th>
-					<th sortable-column="county:getCountyMapping">County</th>
+					<th sortable-column="countryCode:countryMappings[value]">Country</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr ng-repeat="person in people | sortTable:personSort">
+				<!-- You can of course sort the table without "sortTable" filter,
+				     for example in a controller by watching "personSortObject". -->
+				<tr ng-repeat="person in people | sortTable: personSortObject">
 					<td>{{person.name}}</td>
 					<td>{{person.age}}</td>
-					<td>{{countyMappings[person.county]}}</td>
+					<td>{{countryMappings[person.countryCode]}}</td>
 				</tr>
 			</tbody>
 		</table>
-		<!--
-		<table>
-			<thead>
-				<tr>
-					<th>Name</th>
-					<th>Age</th>
-					<th>County</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="person in people | orderBy:getCountyMapping">
-					<td>{{person.name}}</td>
-					<td>{{person.age}}</td>
-					<td>{{countyMappings[person.county]}}</td>
-				</tr>
-			</tbody>
-		</table>
-		-->
 	</body>
-
 </html>

@@ -1,107 +1,67 @@
 angular.module('shagstrom.angular-sortable-table', [])
 
-	.service('SortableTableService', function($location) {
+	/**
+		Directive for setting up a sortable table.
 
-		function strToArr(str) {
-			var arr = [];
-			if (str) {
-				angular.forEach(str.split(','), function (it) {
-					var fieldAndDir = it.split(':');
-					arr.push({ field: fieldAndDir[0], dir: fieldAndDir[1] });
-				});
-			}
-			return arr;
-		}
+		The attribut value is name of the sort object that will be added to scope. The name
+		of the sort object will also be as search parameter name in the browser url.
 
-		function arrToStr(arr) {
-			var sorts = [];
-			angular.forEach(arr, function (it) { sorts.push(it.field + ':' + it.dir); });
-			return sorts.join(',');
-		}
+		The sort object has this format:
 
-		function getSortObject(sortQueryName) {
-			var sortQuery = $location.search()[sortQueryName];
-			if (!angular.isString(sortQuery)) {
-				sortQuery = '';
-			}
-			return strToArr(sortQuery);
-		}
-
-		function setSortQuery(sortQueryName, sortObject) {
-			var sortStr = arrToStr(sortObject);
-			if (sortStr) {
-				$location.search(sortQueryName, sortStr);
-			} else {
-				$location.search(sortQueryName, null);
+		{
+			sortItems: [ {
+				field: 'name',
+				dir: 'asc'
+			}, {
+				field: 'countryCode',
+				dir: 'desc'
+			}, 
+				...
+			],
+			transformers: {
+				countryCode: function ...,
+				...
 			}
 		}
 
-		function findSortItem(sortObject, field) {
-			for (var i = 0; i < sortObject.length; i++) {
-				if (sortObject[i].field === field) {
-					return sortObject[i];
-				}
-			}
-		}
+		Usage:
 
-		function findSortItemIndex(sortObject, field) {
-			for (var i = 0; i < sortObject.length; i++) {
-				if (sortObject[i].field === field) {
-					return i;
-				}
-			}
-			return -1;
-		}
+		<table sortable-table="personSort">
+			<thead>
+				<tr>
+					<th sortable-column="name">Name</th>
+					<th sortable-column="countryCode:countryMappings[value]">Country</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="person in people | sortTable:personSort">
+					<td>{{person.name}}</td>
+					<td>{{countryMappings[person.countryCode]}}</td>
+				</tr>
+			</tbody>
+		</table>
 
-		function updateSortObject(sortObject, field, multipleColumns) {
-			if (!multipleColumns) {
-				var sortItem1 = findSortItem(getSortObject, field);
-				if (sortItem1) {
-					return [ sortItem1 ];
-				} else {
-					return [];
-				}
-			}
-			var i = findSortItemIndex(sortObject, field);
-			if (i >= 0) {
-				var sortItem2 = sortObject[i];
-				sortObject.splice(i, 1);
-				if (sortItem2.dir === 'desc') {
-					sortItem2.dir = 'asc';
-					sortObject.push(sortItem2);
-				}
-			} else {
-				sortObject.push({ field: field, dir: 'desc' });
-			}
-		}
-
-		return {
-			findSortItem: findSortItem,
-			updateSortObject: updateSortObject,
-			getSortObject: getSortObject,
-			setSortQuery: setSortQuery
-		};
-
-	})
-
+	*/
 	.directive('sortableTable', function (SortableTableService) {
 
 		return {
 			restrict: 'A',
 			controller: function ($scope, $attrs) {
-				var sortObjectName = $attrs.sortableTable;
-				$scope[sortObjectName] = {
-					sorts: SortableTableService.getSortObject(sortObjectName),
+				this.sortObjectName = $attrs.sortableTable;
+				$scope[this.sortObjectName] = {
+					sortItems: SortableTableService.getSortItems(this.sortObjectName),
 					transforms: {}
 				};
 				this.registerColumn = function (name, transform) {
 					if (transform) {
-						$scope[sortObjectName].transforms[name] = transform($scope);
+						$scope[this.sortObjectName].transforms[name] = function (obj, field) {
+							return transform($scope, { obj: obj, value: obj[field] });
+						};
 					}
 				};
 				this.updateSort = function (name) {
-					SortableTableService.updateSortObject($scope[sortObjectName].sorts, name, true);
-					SortableTableService.setSortQuery(sortObjectName, $scope[sortObjectName].sorts);
+					SortableTableService.updateSortObject($scope[this.sortObjectName].sortItems, name, false);
+					SortableTableService.setSortQuery(this.sortObjectName, $scope[this.sortObjectName].sortItems);
 				};
 				this.getSortObjectName = function () {
 					return sortObjectName;
@@ -110,6 +70,36 @@ angular.module('shagstrom.angular-sortable-table', [])
 		};
 	})
 
+	/**
+	
+		Directive for making a column sortable.
+
+		Basic usage sortable-column="name", where "name" is the field to sort on.
+
+		You can define a transformer, that is used in "sortTable" filter and can be used
+		when writing you own sorting code.
+
+		The transformer will be parsed and "obj" and "value" will be available. The transformer
+		is defined after ":" in the directive attribute value.
+
+		Usage:
+
+		<table sortable-table="personSort">
+			<thead>
+				<tr>
+					<th sortable-column="name">Name</th>
+					<th sortable-column="countryCode:countryMappings[value]">Country</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="person in people | sortTable:personSort">
+					<td>{{person.name}}</td>
+					<td>{{countryMappings[person.countryCode]}}</td>
+				</tr>
+			</tbody>
+		</table>
+
+	*/
 	.directive('sortableColumn', function ($parse, SortableTableService) {
 
 		return {
@@ -127,13 +117,17 @@ angular.module('shagstrom.angular-sortable-table', [])
 				}
 				tableCtrl.registerColumn(field, transform);
 				element.addClass('sortable');
-				element.on('click.sortable-column', function () {
+				element.on('mousedown', function (event) {
+					// Prevent select on double-click
+					event.preventDefault();
+				});
+				element.on('click', function (event) {
 					scope.$apply(function () {
-						tableCtrl.updateSort(field, transform);
+						tableCtrl.updateSort(field);
 					});
 				});
-				scope.$watch(tableCtrl.getSortObjectName(), function (sortObject) {
-					var sortItem = SortableTableService.findSortItem(sortObject, field);
+				scope.$watch(tableCtrl.sortObjectName + '.sortItems', function (sortItems) {
+					var sortItem = SortableTableService.findSortItem(sortItems, field);
 					if (sortItem) {
 						if (sortItem.dir === 'asc') {
 							element.removeClass('desc').addClass('asc');
@@ -144,13 +138,30 @@ angular.module('shagstrom.angular-sortable-table', [])
 						element.removeClass('asc desc');
 					}
 				}, true);
-				scope.$on('$destroy', function () {
-					element.off('click.sortable-column');
-				});
 			}
 		};
 	})
+	
+	/**
 
+		Basic filter for sorting table rows based on sortObject.
+
+		Usage:
+
+		<table sortable-table="personSort">
+			<thead>
+				<tr>
+					<th sortable-column="name">Name</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="person in people | sortTable:personSort">
+					<td>{{person.name}}</td>
+				</tr>
+			</tbody>
+		</table>
+
+	*/
 	.filter('sortTable', function () {
 		function compare(a, b) {
 			if (a === b) {
@@ -161,12 +172,11 @@ angular.module('shagstrom.angular-sortable-table', [])
 		}
 		return function (array, sortObject) {
 			var newArray = [].concat(array);
-			angular.forEach(sortObject.sorts, function (sortItem) {
+			angular.forEach(sortObject.sortItems, function (sortItem) {
 				var transform = sortObject.transforms[sortItem.field];
-				var value = transform ? transform : function (obj) { return obj[sortItem.field]; };
-				console.log(sortItem.field);
+				var value = transform ? function (obj) { return transform(obj, sortItem.field); } : function (obj) { return obj[sortItem.field]; };
 				newArray.sort(function (a, b) {
-					if (sortItem.dir === 'desc') {
+					if (sortItem.dir === 'asc') {
 						return compare(value(a), value(b));
 					} else {
 						return compare(value(b), value(a));
@@ -175,5 +185,93 @@ angular.module('shagstrom.angular-sortable-table', [])
 			});
 			return newArray;
 		};
-	});
+	})
 
+	/**
+		Helper functions.
+	*/
+	.service('SortableTableService', function($location) {
+
+		function strToArr(str) {
+			var arr = [];
+			if (str) {
+				var parts = str.split(',');
+				for (var i = 0; i < parts.length; i++) {
+					var fieldAndDir = parts[i].split(':');
+					arr.push({ field: fieldAndDir[0], dir: fieldAndDir[1] });
+				}
+			}
+			return arr;
+		}
+
+		function arrToStr(arr) {
+			var sortItems = [];
+			for (var i = 0; i < arr.length; i++) {
+				sortItems.push(arr[i].field + ':' + arr[i].dir);
+			}
+			return sortItems.join(',');
+		}
+
+		function getSortItems(sortQueryName) {
+			var sortQuery = $location.search()[sortQueryName];
+			if (!angular.isString(sortQuery)) {
+				sortQuery = '';
+			}
+			return strToArr(sortQuery);
+		}
+
+		function setSortQuery(sortQueryName, sortItems) {
+			var sortStr = arrToStr(sortItems);
+			if (sortStr) {
+				$location.search(sortQueryName, sortStr);
+			} else {
+				$location.search(sortQueryName, null);
+			}
+		}
+
+		function findSortItem(sortItems, field) {
+			for (var i = 0; i < sortItems.length; i++) {
+				if (sortItems[i].field === field) {
+					return sortItems[i];
+				}
+			}
+		}
+
+		function findSortItemIndex(sortItems, field) {
+			for (var i = 0; i < sortItems.length; i++) {
+				if (sortItems[i].field === field) {
+					return i;
+				}
+			}
+			return -1;
+		}
+
+		function updateSortObject(sortItems, field, multipleColumns) {
+			if (!multipleColumns) {
+				var sortItem1 = findSortItem(sortItems, field);
+				sortItems.splice(0, sortItems.length);
+				if (sortItem1) {
+					sortItems.push(sortItem1);
+				}
+			}
+			var i = findSortItemIndex(sortItems, field);
+			if (i >= 0) {
+				var sortItem2 = sortItems[i];
+				sortItems.splice(i, 1);
+				if (sortItem2.dir === 'asc') {
+					sortItem2.dir = 'desc';
+					sortItems.push(sortItem2);
+				}
+			} else {
+				sortItems.push({ field: field, dir: 'asc' });
+			}
+		}
+
+		return {
+			findSortItem: findSortItem,
+			updateSortObject: updateSortObject,
+			getSortItems: getSortItems,
+			setSortQuery: setSortQuery
+		};
+
+	});
