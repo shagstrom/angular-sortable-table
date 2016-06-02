@@ -48,7 +48,7 @@ Directives, filter and service is documented below the complete example.
         </head>
         <body ng-app="angular-sortable-table-example" ng-controller="MainCtrl">
             <h1>Angular sortable table example</h1>
-            <table sortable-table="personSortObject">
+            <table sortable-table="personSortObject" sortable-table-options="{ multipleColumns: true }">
                 <thead>
                     <tr>
                         <th sortable-column="name">Name</th>
@@ -92,17 +92,26 @@ The sort object has this format:
         }
     }
 
+The following options are set using the sortable-table-options attribute:
+
+<dl>
+    <dt>multipleColumns</dt>
+    <dd>true/false; for allowing sort on multiple columns</dd>
+</dl>
+
 Usage:
 
-    <table sortable-table="personSortObject">
+    <table sortable-table="personSortObject" sortable-table-options="{ multipleColumns: true }">
         <thead>
             <tr>
                 <th sortable-column="name">Name</th>
+                <th sortable-column="name">Age</th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="person in people | sortTable:personSortObject">
                 <td>{{person.name}}</td>
+                <td>{{person.age}}</td>
             </tr>
         </tbody>
     </table>
