@@ -14,6 +14,8 @@ or
 
 Directives, filter and service is documented below the complete example.
 
+A working example can be found [here](http://www.dreamchain.com/static/angular-sortable-table-example/index.html).
+
     <!DOCTYPE html>
     <html>
         <head>
