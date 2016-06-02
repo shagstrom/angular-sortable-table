@@ -10,7 +10,9 @@ or
 
     npm install @shagstrom/angular-sortable-table
 
-Example:
+## Complete example:
+
+Directives, filter and service is documented below the complete example.
 
     <!DOCTYPE html>
     <html>
@@ -64,3 +66,96 @@ Example:
             </table>
         </body>
     </html>
+
+## sortableTable
+
+Directive for setting up a sortable table.
+
+The attribut value is name of the sort object that will be added to scope. The name
+of the sort object will also be as search parameter name in the browser url.
+
+The sort object has this format:
+
+    {
+        sortItems: [ {
+            field: 'name',
+            dir: 'asc'
+        }, {
+            field: 'countryCode',
+            dir: 'desc'
+        }, 
+            ...
+        ],
+        transformers: {
+            countryCode: function ...,
+            ...
+        }
+    }
+
+Usage:
+
+    <table sortable-table="personSortObject">
+        <thead>
+            <tr>
+                <th sortable-column="name">Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="person in people | sortTable:personSortObject">
+                <td>{{person.name}}</td>
+            </tr>
+        </tbody>
+    </table>
+
+## sortableColumn
+
+Directive for making a column sortable.
+
+Basic usage sortable-column="name", where "name" is the field to sort on.
+
+You can define a transformer, that is used in "sortTable" filter and can be used
+when writing you own sorting code.
+
+The transformer will be parsed and "obj" and "value" will be available. The transformer
+is defined after ":" in the directive attribute value. All transformers will be found in the sortObject.
+
+Usage:
+
+    <table sortable-table="personSortObject">
+        <thead>
+            <tr>
+                <th sortable-column="name">Name</th>
+                <th sortable-column="countryCode:countryMappings[value]">Country</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="person in people | sortTable:personSortObject">
+                <td>{{person.name}}</td>
+                <td>{{countryMappings[person.countryCode]}}</td>
+            </tr>
+        </tbody>
+    </table>
+
+## sortTable
+
+Basic filter for sorting table rows based on sortObject.
+
+Usage:
+
+    <table sortable-table="personSortObject">
+        <thead>
+            <tr>
+                <th sortable-column="name">Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="person in people | sortTable:personSortObject">
+                <td>{{person.name}}</td>
+            </tr>
+        </tbody>
+    </table>
+
+## SortableTableService
+
+Service containing helper functions.
+

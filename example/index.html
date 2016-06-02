@@ -32,7 +32,7 @@
 	</head>
 	<body ng-app="angular-sortable-table-example" ng-controller="MainCtrl">
 		<h1>Angular sortable table example</h1>
-		<table sortable-table="personSortObject">
+		<table sortable-table="personSortObject" sortable-table-options="{ multipleColumns: true }">
 			<thead>
 				<tr>
 					<th sortable-column="name">Name</th>

@@ -1,53 +1,16 @@
 angular.module('shagstrom.angular-sortable-table', [])
 
-	/**
-		Directive for setting up a sortable table.
-
-		The attribut value is name of the sort object that will be added to scope. The name
-		of the sort object will also be as search parameter name in the browser url.
-
-		The sort object has this format:
-
-		{
-			sortItems: [ {
-				field: 'name',
-				dir: 'asc'
-			}, {
-				field: 'countryCode',
-				dir: 'desc'
-			}, 
-				...
-			],
-			transformers: {
-				countryCode: function ...,
-				...
-			}
-		}
-
-		Usage:
-
-		<table sortable-table="personSort">
-			<thead>
-				<tr>
-					<th sortable-column="name">Name</th>
-					<th sortable-column="countryCode:countryMappings[value]">Country</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="person in people | sortTable:personSort">
-					<td>{{person.name}}</td>
-					<td>{{countryMappings[person.countryCode]}}</td>
-				</tr>
-			</tbody>
-		</table>
-
-	*/
-	.directive('sortableTable', function (SortableTableService) {
+	.directive('sortableTable', function ($parse, SortableTableService) {
 
 		return {
 			restrict: 'A',
 			controller: function ($scope, $attrs) {
 				this.sortObjectName = $attrs.sortableTable;
+				var multipleColumns = false;
+				if ($attrs.sortableTableOptions) {
+					var options = $parse($attrs.sortableTableOptions)($scope);
+					multipleColumns = !!options.multipleColumns;
+				}
 				$scope[this.sortObjectName] = {
 					sortItems: SortableTableService.getSortItems(this.sortObjectName),
 					transforms: {}
@@ -70,36 +33,6 @@ angular.module('shagstrom.angular-sortable-table', [])
 		};
 	})
 
-	/**
-	
-		Directive for making a column sortable.
-
-		Basic usage sortable-column="name", where "name" is the field to sort on.
-
-		You can define a transformer, that is used in "sortTable" filter and can be used
-		when writing you own sorting code.
-
-		The transformer will be parsed and "obj" and "value" will be available. The transformer
-		is defined after ":" in the directive attribute value.
-
-		Usage:
-
-		<table sortable-table="personSort">
-			<thead>
-				<tr>
-					<th sortable-column="name">Name</th>
-					<th sortable-column="countryCode:countryMappings[value]">Country</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="person in people | sortTable:personSort">
-					<td>{{person.name}}</td>
-					<td>{{countryMappings[person.countryCode]}}</td>
-				</tr>
-			</tbody>
-		</table>
-
-	*/
 	.directive('sortableColumn', function ($parse, SortableTableService) {
 
 		return {
@@ -142,26 +75,6 @@ angular.module('shagstrom.angular-sortable-table', [])
 		};
 	})
 	
-	/**
-
-		Basic filter for sorting table rows based on sortObject.
-
-		Usage:
-
-		<table sortable-table="personSort">
-			<thead>
-				<tr>
-					<th sortable-column="name">Name</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="person in people | sortTable:personSort">
-					<td>{{person.name}}</td>
-				</tr>
-			</tbody>
-		</table>
-
-	*/
 	.filter('sortTable', function () {
 		function compare(a, b) {
 			if (a === b) {
@@ -187,9 +100,6 @@ angular.module('shagstrom.angular-sortable-table', [])
 		};
 	})
 
-	/**
-		Helper functions.
-	*/
 	.service('SortableTableService', function($location) {
 
 		function strToArr(str) {
