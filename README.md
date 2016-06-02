@@ -105,7 +105,7 @@ Usage:
         <thead>
             <tr>
                 <th sortable-column="name">Name</th>
-                <th sortable-column="name">Age</th>
+                <th sortable-column="age">Age</th>
             </tr>
         </thead>
         <tbody>
