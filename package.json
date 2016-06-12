@@ -1,7 +1,7 @@
 {
   "name": "@shagstrom/angular-sortable-table",
   "main": "angular-sortable-table.js",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/shagstrom/angular-sortable-table",
   "repository" :{
     "type" : "git",

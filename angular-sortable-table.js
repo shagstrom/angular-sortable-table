@@ -1,3 +1,13 @@
+/*!
+
+Angular Sortable Table version 0.1.1
+
+Copyright (c) 2016 Simon Hagström
+
+Released under the MIT license
+https://raw.githubusercontent.com/shagstrom/angular-sortable-table/master/LICENSE
+
+*/
 angular.module('shagstrom.angular-sortable-table', [])
 
 	.directive('sortableTable', function ($parse, SortableTableService) {
