@@ -23,7 +23,7 @@ angular.module('shagstrom.angular-sortable-table', [])
 					}
 				};
 				this.updateSort = function (name) {
-					SortableTableService.updateSortObject($scope[this.sortObjectName].sortItems, name, false);
+					SortableTableService.updateSortObject($scope[this.sortObjectName].sortItems, name, multipleColumns);
 					SortableTableService.setSortQuery(this.sortObjectName, $scope[this.sortObjectName].sortItems);
 				};
 				this.getSortObjectName = function () {
