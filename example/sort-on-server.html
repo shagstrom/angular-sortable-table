@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Angular sortable table example - sorting on server</title>
+		<link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
+		<script src="bower_components/angular/angular.js"></script>
+		<script src="bower_components/angular-sortable-table/angular-sortable-table.js"></script>
+		<style>
+			th.sortable { cursor: pointer; }
+			th.sortable:after { content: "\f0dc"; padding-left: 5px; font-family: FontAwesome; font-size: 12px; }
+			th.sortable.asc:after { content: "\f0de"; }
+			th.sortable.desc:after { content: "\f0dd"; }
+		</style>
+		<script>
+			angular.module('angular-sortable-table-example', [ 'shagstrom.angular-sortable-table' ])
+				.controller('MainCtrl', function ($scope, $http, SortableTableService) {
+					$http.get('country-mappings.php').then(function (response) {
+						$scope.countryMappings = response.data;
+					});
+					$scope.$watch('personSortObject', function (personSortObject) {
+						var sortQuery = SortableTableService.arrToStr(personSortObject.sortItems);
+						$http.get('people.php?sort=' + sortQuery).then(function (response) {
+							$scope.people = response.data;
+						});
+					}, true);
+				});
+		</script>
+	</head>
+	<body ng-app="angular-sortable-table-example" ng-controller="MainCtrl">
+		<div class="container-fluid">
+			<h1>Angular sortable table example - sorting on server</h1>
+			<table sortable-table="personSortObject" sortable-table-options="{ multipleColumns: true }">
+				<thead>
+					<tr>
+						<th sortable-column="name">Name</th>
+						<th sortable-column="age">Age</th>
+						<th sortable-column="countryCode">Country</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- You can of course sort the table without "sortTable" filter,
+					     for example in a controller by watching "personSortObject". -->
+					<tr ng-repeat="person in people">
+						<td>{{person.name}}</td>
+						<td>{{person.age}}</td>
+						<td>{{countryMappings[person.countryCode]}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</body>
+</html>
