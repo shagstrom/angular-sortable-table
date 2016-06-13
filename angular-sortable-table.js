@@ -188,6 +188,8 @@ angular.module('shagstrom.angular-sortable-table', [])
 		}
 
 		return {
+			strToArr: strToArr,
+			arrToStr: arrToStr,
 			findSortItem: findSortItem,
 			updateSortObject: updateSortObject,
 			getSortItems: getSortItems,
