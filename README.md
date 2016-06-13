@@ -10,7 +10,7 @@ or
 
     npm install @shagstrom/angular-sortable-table
 
-<img style="width:100%;max-width:938px" alt="Sortable table screen-cast" src="http://www.dreamchain.com/static/angular-sortable-table-screencast.gif">
+![Sortable table screen-cast](http://www.dreamchain.com/static/angular-sortable-table-screencast.gif)
 
 ## Complete example:
 
