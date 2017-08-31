@@ -1,6 +1,6 @@
 /*!
 
-Angular Sortable Table version 0.2.0
+Angular Sortable Table version 0.3.0
 
 Copyright (c) 2016 Simon Hagström
 
@@ -84,11 +84,13 @@ angular.module('shagstrom.angular-sortable-table', [])
 			}
 		};
 	})
-	
+
 	.filter('sortTable', function () {
 		function compare(a, b) {
 			if (a === b) {
 				return 0;
+			} else if (angular.isString(a)) {
+				return a.localeCompare(b);
 			} else {
 				return a < b ? -1 : 1;
 			}
