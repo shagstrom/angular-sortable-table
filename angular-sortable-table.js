@@ -1,6 +1,6 @@
 /*!
 
-Angular Sortable Table version 0.3.0
+Angular Sortable Table version 0.4.0
 
 Copyright (c) 2016 Simon Hagström
 
@@ -86,17 +86,17 @@ angular.module('shagstrom.angular-sortable-table', [])
 	})
 
 	.filter('sortTable', function () {
-		function compare(a, b) {
-			if (a === b) {
-				return 0;
-			} else if (angular.isString(a)) {
-				return a.localeCompare(b);
-			} else {
-				return a < b ? -1 : 1;
-			}
-		}
-		return function (array, sortObject) {
-			var newArray = [].concat(array);
+		return function (array, sortObject, locale, localeOptions) {
+			var compare = function (a, b) {
+				if (a === b) {
+					return 0;
+				} else if (angular.isString(a)) {
+					return a.localeCompare(b, locale, localeOptions);
+				} else {
+					return a < b ? -1 : 1;
+				}
+			},
+			newArray = [].concat(array);
 			angular.forEach(sortObject.sortItems, function (sortItem) {
 				var transform = sortObject.transforms[sortItem.field];
 				var value = transform ? function (obj) { return transform(obj, sortItem.field); } : function (obj) { return obj[sortItem.field]; };
