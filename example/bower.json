@@ -2,7 +2,7 @@
   "name": "angular-validation-message-example",
   "license": "MIT",
   "dependencies": {
-    "angular-sortable-table": "0.4.1",
+    "angular-sortable-table": "0.4.2",
     "font-awesome": "^4.6.3"
   }
 }

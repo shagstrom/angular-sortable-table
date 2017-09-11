@@ -1,6 +1,6 @@
 /*!
 
-Angular Sortable Table version 0.4.1
+Angular Sortable Table version 0.4.2
 
 Copyright (c) 2016 Simon Hagström
 
@@ -35,9 +35,6 @@ angular.module('shagstrom.angular-sortable-table', [])
 				this.updateSort = function (name) {
 					SortableTableService.updateSortObject($scope[this.sortObjectName].sortItems, name, multipleColumns);
 					SortableTableService.setSortQuery(this.sortObjectName, $scope[this.sortObjectName].sortItems);
-				};
-				this.getSortObjectName = function () {
-					return sortObjectName;
 				};
 			}
 		};
@@ -87,6 +84,9 @@ angular.module('shagstrom.angular-sortable-table', [])
 
 	.filter('sortTable', function () {
 		return function (array, sortObject, locale, localeOptions) {
+			if (!array) {
+				return [];
+			}
 			var compare = function (a, b) {
 				if (a === b) {
 					return 0;
